@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QApplication, QVBoxLayout, QLabel, QWidget, QGridLay
 from datetime import datetime
 
 
-class AgeCalculater(QWidget):
+class AgeCalculator(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Age Calculator")
@@ -37,8 +37,7 @@ class AgeCalculater(QWidget):
         self.output_label.setText(f"{self.name_line_edit.text()} is {age} years old")
 
 
-
 app = QApplication(sys.argv)
-age_calculator = AgeCalculater()
+age_calculator = AgeCalculator()
 age_calculator.show()
 sys.exit(app.exec())
