@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
         self.statusbar.addWidget(delete_button)
 
     def edit(self):
-        dialog = QDialog
+        dialog = EditDialog()
         dialog.exec()
 
     def delete(self):
@@ -134,28 +134,57 @@ class EditDialog(QDialog):
         self.setFixedHeight(300)
 
         layout = QVBoxLayout()
+
+        # Get student name from user selected row
+        index = student_manager.table.currentRow()
+        student_name = student_manager.table.item(index, 1).text()
+        self.student_id = student_manager.table.item(index, 0).text()
+
         # Add student name widget
-        self.student_name = QLineEdit()
+        self.student_name = QLineEdit(student_name)
         self.student_name.setPlaceholderText("Name")
         layout.addWidget(self.student_name)
+
+        # Get course name from user selected row
+        index = student_manager.table.currentRow()
+        course_name = student_manager.table.item(index, 2).text()
 
         # Add course dropdown widget
         self.course_name = QComboBox()
         courses = ["Biology", "Math", "Astronomy", "Physics"]
         self.course_name.addItems(courses)
+        self.course_name.setCurrentText(course_name)
         layout.addWidget(self.course_name)
 
+        # Get student mobile from user selected row
+        index = student_manager.table.currentRow()
+        mobile = student_manager.table.item(index, 3).text()
+
         # Add mobile name widget
-        self.mobile = QLineEdit()
+        self.mobile = QLineEdit(mobile)
         self.mobile.setPlaceholderText("Mobile Number")
         layout.addWidget(self.mobile)
 
         # Add submit button
-        submit_button = QPushButton("Submit")
-        submit_button.clicked.connect(self.add_student)
+        submit_button = QPushButton("Update")
+        submit_button.clicked.connect(self.edit_student)
         layout.addWidget(submit_button)
 
         self.setLayout(layout)
+
+    def edit_student(self):
+        id = self.student_id
+        name = self.student_name.text()
+        course = self.course_name.itemText(self.course_name.currentIndex())
+        mobile = self.mobile.text()
+        connection = sqlite3.connect("database.db")
+        cursor = connection.cursor()
+        cursor.execute("UPDATE students SET name = ?, course = ?, mobile = ? WHERE id = ?",
+                       (name, course, mobile, id))
+        connection.commit()
+        cursor.close()
+        connection.close()
+        student_manager.load_data()
 
 
 class DeleteDialog(QDialog):
@@ -232,7 +261,6 @@ class InsertDialog(QDialog):
         cursor.close()
         connection.close()
         student_manager.load_data()
-
 
 
 
