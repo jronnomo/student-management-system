@@ -2,7 +2,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWidgets import QApplication, QPushButton, \
     QGridLayout, QLineEdit, QMainWindow, QTableWidget, QTableWidgetItem, QDialog, \
-    QVBoxLayout, QComboBox, QToolBar, QStatusBar, QLabel
+    QVBoxLayout, QComboBox, QToolBar, QStatusBar, QLabel, QMessageBox
 import sys
 import sqlite3
 
@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
         dialog.exec()
 
     def delete(self):
-        dialog = QDialog
+        dialog = DeleteDialog()
         dialog.exec()
 
     def load_data(self):
@@ -190,33 +190,46 @@ class EditDialog(QDialog):
 class DeleteDialog(QDialog):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Edit Student Data")
+        self.setWindowTitle("Delete Student Data")
         self.setFixedWidth(300)
         self.setFixedHeight(300)
 
-        layout = QVBoxLayout()
-        # Add student name widget
-        self.student_name = QLineEdit()
-        self.student_name.setPlaceholderText("Name")
-        layout.addWidget(self.student_name)
+        layout = QGridLayout()
 
-        # Add course dropdown widget
-        self.course_name = QComboBox()
-        courses = ["Biology", "Math", "Astronomy", "Physics"]
-        self.course_name.addItems(courses)
-        layout.addWidget(self.course_name)
+        index = student_manager.table.currentRow()
+        self.student_id = student_manager.table.item(index, 0).text()
 
-        # Add mobile name widget
-        self.mobile = QLineEdit()
-        self.mobile.setPlaceholderText("Mobile Number")
-        layout.addWidget(self.mobile)
+        # Receive confirmation
+        confirmation = QLabel("Are you sure you want to delete this user?")
+        yes = QPushButton("Yes")
+        no = QPushButton("No")
+        layout.addWidget(confirmation, 0, 0, 1, 2)
+        layout.addWidget(yes, 1, 0)
+        layout.addWidget(no, 1, 1)
 
-        # Add submit button
-        submit_button = QPushButton("Submit")
-        submit_button.clicked.connect(self.add_student)
-        layout.addWidget(submit_button)
+        # Execute delete on confirmation
+        yes.clicked.connect(self.delete_student)
 
         self.setLayout(layout)
+
+    def delete_student(self):
+        id = self.student_id
+        connection = sqlite3.connect("database.db")
+        cursor = connection.cursor()
+        cursor.execute("DELETE from students WHERE id = ?",
+                       (id,))
+        connection.commit()
+        cursor.close()
+        connection.close()
+        student_manager.load_data()
+
+        self.close()
+
+        confirmation_widget = QMessageBox()
+        confirmation_widget.setWindowTitle("Success")
+        confirmation_widget.setText("The record was deleted successfully")
+        confirmation_widget.exec()
+
 
 class InsertDialog(QDialog):
     def __init__(self):
