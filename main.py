@@ -192,7 +192,7 @@ class EditDialog(QDialog):
         name = self.student_name.text()
         course = self.course_name.itemText(self.course_name.currentIndex())
         mobile = self.mobile.text()
-        connection = DatabaseConnection.connect()
+        connection = DatabaseConnection().connect()
         cursor = connection.cursor()
         cursor.execute("UPDATE students SET name = ?, course = ?, mobile = ? WHERE id = ?",
                        (name, course, mobile, id))
@@ -229,7 +229,7 @@ class DeleteDialog(QDialog):
 
     def delete_student(self):
         id = self.student_id
-        connection = DatabaseConnection.connect()
+        connection = DatabaseConnection().connect()
         cursor = connection.cursor()
         cursor.execute("DELETE from students WHERE id = ?",
                        (id,))
@@ -281,7 +281,7 @@ class InsertDialog(QDialog):
         name = self.student_name.text()
         course = self.course_name.itemText(self.course_name.currentIndex())
         mobile = self.mobile.text()
-        connection = DatabaseConnection.connect()
+        connection = DatabaseConnection().connect()
         cursor = connection.cursor()
         cursor.execute("INSERT INTO students (name, course, mobile) VALUES (?, ?, ?)",
                        (name, course, mobile))
