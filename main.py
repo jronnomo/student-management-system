@@ -5,10 +5,11 @@ from PyQt6.QtWidgets import QApplication, QPushButton, \
     QVBoxLayout, QComboBox, QToolBar, QStatusBar, QLabel, QMessageBox
 import sys
 import mysql.connector
-import dotenv
+from dotenv import load_dotenv
 import os
 
-dotenv.load_dotenv()
+
+load_dotenv()
 PASSWORD = os.getenv("PASSWORD")
 
 # Creating class to connect to database
