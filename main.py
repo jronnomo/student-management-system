@@ -11,7 +11,7 @@ import os
 dotenv.load_dotenv()
 PASSWORD = os.getenv("PASSWORD")
 
-
+# Creating class to connect to database
 class DatabaseConnection():
     def __init__(self, host="localhost", user="root", password=PASSWORD, database="school"):
         self.host = host
